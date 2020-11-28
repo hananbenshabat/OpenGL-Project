@@ -1,0 +1,481 @@
+var hidden = 0, download_drop = 0, preview = 0; var adsRightRandomType = 1; var adsBottomMarginTop = 0;
+
+$("#hide").click(function () {
+	if (hidden == 0 && $("#categories").css("margin-left") == "0px") {
+		$("#categories_text").animate({
+			'margin-left': '-204px'
+		}, 300)
+		$("#categories").animate({
+			'margin-left': '-234px'
+		}, 300)
+		setTimeout(function () {
+			$("#hide").attr("style", 'background-image: url(../images/show.png)')
+			hidden = 1;
+		}, 150);
+	}
+	if (hidden == 1 && $("#categories").css("margin-left") == "-234px") {
+		$("#categories_text").animate({
+			'margin-left': '0px'
+		}, 300)
+		$("#categories").animate({
+			'margin-left': '0px'
+		}, 300)
+		setTimeout(function () {
+			$("#hide").attr("style", 'background-image: url(../images/hide.png)')
+			hidden = 0;
+		}, 150);
+
+		$(".textures_ovr").css("margin-bottom","98px");
+	}
+
+	// SkyScraper
+	var skyScraperWidth = $("#ads_right_skyscraper").width() + 34;
+	var windowWidth = $(window).width();
+	if ($(window).width() < 1024) {
+		windowWidth = 1024
+	}
+	if ($("#categories").css("margin-left") == "0px") {
+		$("#download_images_content").width(windowWidth - skyScraperWidth);
+	}
+	if ($("#categories").css("margin-left") == "-234px") {
+		$("#download_images_content").width(windowWidth - 234 - skyScraperWidth);
+	}
+})
+
+$(document).ready(function () {
+	var isUserPremium = userAccountType && userAccountType === "PREMIUM" ? true : false;
+
+	// show header leader board if pageWidth > 1600
+	if(isUserPremium === false) {
+		var windowWidth = $(window).width();
+
+		var adsSkyScraperDiv = $('#ads_right_skyscraper');
+		if (windowWidth >= 2300) {
+			try {
+				var adSkyScraperCode = createAdsScript('download_verticle_responsive');
+				adsSkyScraperDiv.html(adSkyScraperCode);
+			}
+			catch (e) {
+				console.log("Failed to insert Skyscraper ads " + JSON.stringify(e));
+			}
+		} else {
+			adsSkyScraperDiv.remove();
+		}
+		// Show footer ads
+		var adsFooterDiv = $('#ads_download_footer');
+		try {
+			var adFooterCode = createAdsScript('download_responsive');
+			adsFooterDiv.html(adFooterCode);
+		}
+		catch (e) {
+			console.log("Failed to insert download footer ads " + JSON.stringify(e));
+		}
+	}
+
+});
+
+$(document).ready(function () {
+
+	$('.size-cannot-be-downloaded').click(function () {
+		alert("All images with given size exceeds quota. Download was not successful.");
+	});
+
+	initializeDownloadLinkHover();
+
+	initializeDownloadButtonHover();
+
+});
+
+
+$(".download_drop_down, .buttons .download").click(function (e) {
+	e.stopPropagation();
+});
+$(".buttons .download").click(function (e) {
+	if (download_drop == 0) {
+		$(".download_drop_down").fadeIn(100);
+		download_drop = 1;
+	}
+	else {
+		$(".download_drop_down").fadeOut(100);
+		download_drop = 0;
+	}
+});
+$(document).click(function () {
+	if (download_drop == 1) {
+		$(".download_drop_down").fadeOut(100);
+		download_drop = 0;
+	}
+})
+
+
+function smllscr() {
+	// SkyScraper
+	var skyScraperWidth = $("#ads_right_skyscraper").width() + 34;
+	var windowWidth = $(window).width();
+	if ($(window).width() < 1024) {
+		windowWidth = 1024
+	}
+	if ($("#categories").css("margin-left") == "0px") {
+		$("#download_images_content").width(windowWidth - 234 - skyScraperWidth);
+	}
+	if ($("#categories").css("margin-left") == "-234px") {
+		$("#download_images_content").width(windowWidth - skyScraperWidth);
+	}
+
+	// Setting width of keywords when right sky scraper is showing
+	if ($(".textures_ovr").height() < 1000 + $(".header-image").height()){
+		$("#downloadKeywords").width($("#download_images_content").width());
+	} else {
+		$("#downloadKeywords").width($(".content_padding").width());
+	}
+
+	//Bottom
+	//if ($(".textures_ovr").height() >= $(".categories_paddings").height() ) {
+	//	$("#categories").height($(".textures_ovr").height() + 24 + 90 + 24);
+	//} else if ($(".textures_ovr").height() < $(".categories_paddings").height()){
+	//	$("#categories").height($(".categories_paddings").height() + 24 + 90 + 24);
+	//}
+	if ($(window).width() <= 1300) {
+		$(".navigation ul li a").attr("style", "padding: 0 14px;")
+		$(".news").height(185)
+	}
+	else {
+		$(".navigation ul li a").attr("style", "padding: 0 18px;")
+	}
+
+	// if (userAccountType !== "PREMIUM") {
+	// 	//// if download page is short, adding margin to page
+	// 	var downloadContentHeight = $(".textures_ovr").height();
+	// 	var categoryTreeHeight = $(".categories").height();
+	// 	var adsFooterDiv = $('#ads_download_footer');
+	// 	if (categoryTreeHeight > downloadContentHeight) {
+	// 		if (adsBottomMarginTop > 0) {
+	// 			adsFooterDiv.css("margin-top", adsBottomMarginTop);
+	// 		} else {
+	// 			var bottomSpace = categoryTreeHeight - downloadContentHeight;
+	// 			if ((bottomSpace - 90)/2 > 22) {
+	// 				adsBottomMarginTop = (bottomSpace - 90)/2 + 45;
+	// 				adsFooterDiv.css("margin-top", adsBottomMarginTop);
+	// 			} else {
+	// 				adsFooterDiv.css("margin-top", adsBottomMarginTop);
+	// 			}
+	// 		}
+	// 	} else {
+	// 		adsBottomMarginTop = 0;
+	// 		adsFooterDiv.css("margin-top", "0px");
+	// 	}
+	// }
+}
+
+$(window).resize(function() {
+	smllscr();
+});
+
+function updateAddToLightboxText(idsToUpdate) {
+	for (var i = 0; i < idsToUpdate.length; i++) {
+		var photoId = idsToUpdate[i];
+		var targetIcon = $('#addToLightboxIcon-' + photoId);
+		if (targetIcon.hasClass('icon_trans')) {
+			targetIcon.attr("src", "/images/favorites-plus-trans.png");
+		} else {
+			targetIcon.attr("src", "/images/favorites-plus.png");
+		}
+        targetIcon.parents('form').addClass('removeLightboxForm').removeClass('addToLightboxForm');
+	}
+}
+
+// Update light box text after remove photo
+function updateRemoveFromLightboxText(form)  {
+    var targetIcon = form.children('.download_favourites_icon');
+	if (targetIcon.hasClass('icon_trans')) {
+		targetIcon.attr("src", "/images/favorites-min-trans.png");
+	} else {
+		targetIcon.attr("src", "/images/favorites-min.png");
+	}
+    form.addClass('addToLightboxForm').removeClass('removeLightboxForm');
+}
+
+
+$(document).ready(function () {
+	// Sky scrapper
+	var skyScraperWidth = $("#ads_right_skyscraper").width() + 34;
+	var windowWidth = $(window).width();
+	if ($(window).width() < 1024) {
+		windowWidth = 1024
+	}
+	// SkyScraper
+	if ($("#categories").css("margin-left") == "0px") {
+		$("#download_images_content").width(windowWidth - 234 - skyScraperWidth);
+	}
+	if ($("#categories").css("margin-left") == "-234px") {
+		$("#download_images_content").width(windowWidth - skyScraperWidth);
+	}
+
+
+	// Bottom
+	$(".textures_ovr").css("min-height", "800px");
+
+	smllscr();
+
+	$('.download-whole-set-premium').click(function () {
+		window.location = '/premiumaccess';
+		return false;
+	});
+
+	// Bind event if class changed
+	$(document).on('click', '.removeLightboxForm', function() {
+		var form = $(this);
+		submitRemoveLightboxForm(form);
+	});
+	$(document).on('click', '.addToLightboxForm', function() {
+		var form = $(this);
+		submitAddToLightboxForm(form);
+	});
+
+    // Add light box photo
+	function submitAddToLightboxForm(form) {
+		$(form).ajaxSubmit({
+			dataType: 'json',
+			url: '/lightbox/addToLightbox',
+			success: function (response) {
+				updateLightboxCounter();
+
+				if (response.idsAdded) {
+					updateAddToLightboxText(response.idsAdded);
+				}
+			}
+		});
+		return false;
+	}
+
+	// Remove light box photo
+	function submitRemoveLightboxForm(form) {
+		$(form).ajaxSubmit({
+			dataType: 'json',
+			url: '/lightbox/removeFromLightbox',
+			success: function (response) {
+				updateLightboxCounter();
+
+				if (response.id) {
+					updateRemoveFromLightboxText(form);
+				}
+			}
+		});
+		return false;
+	}
+
+	// add all to lightbox
+	$('#addAllToLightboxForm').submit(function () {
+		$(this).ajaxSubmit({
+			dataType: 'json',
+			url: '/lightbox/addToLightbox',
+			success: function (response) {
+				updateLightboxCounter();
+
+				if (response.idsAdded) {
+					updateAddToLightboxText(response.idsAdded);
+				}
+			}
+		});
+		return false;
+	});
+
+	$('#addAllToLightbox').click(function () {
+		$('#addAllToLightboxForm').submit();
+	});
+
+	// Start slideshow menu header
+	var headers = $('.dots').length;
+
+	window.tindex = 0;
+	window.intervalCount = 0;
+	function changeHeader(i){
+		return function(){
+			cancelAnimationFrame(window.intervalId);
+			if($('.dots').eq(i).hasClass("active_dot")){
+				return;
+			}
+			window.tindex = i;
+			$(".active_t").fadeOut(300);
+			$(".download_headers_content_image").css("display","none");
+			$(".download_headers_image, .download_headers_content_image").eq(i).fadeIn(300);
+
+			$(".download_headers_image, .download_headers_content_image").removeClass("active_t");
+			$(".dots").removeClass("active_dot");
+			$(".download_headers_image, .download_headers_content_image").eq(i).addClass("active_t");
+			$('.dots').eq(i).addClass("active_dot");
+		}
+	}
+
+	// This is for auto header animation
+	function headerTicker() {
+		if (window.tindex == headers - 1) {
+			window.tindex = 0;
+			index = 0;
+		} else {
+			window.tindex = window.tindex + 1;
+			index = window.tindex;
+		}
+		// trigger a click event on the dot
+		if($('.dots').eq(index).hasClass("active_dot")){
+			return;
+		}
+
+		$(".active_t").fadeOut(300);
+		$(".download_headers_image, .download_headers_content_image").eq(index).fadeIn(300);
+
+		$(".download_headers_image, .download_headers_content_image").removeClass("active_t");
+		$(".dots").removeClass("active_dot");
+		$(".download_headers_image, .download_headers_content_image").eq(index).addClass("active_t");
+		$('.dots').eq(index).addClass("active_dot");
+	}
+
+	/**
+	 * Initialize header's (small) dot/cicle click event
+	 */
+	for(var i=0; i<headers; i++){
+		$('.dots').eq(i).click(changeHeader(i));
+	}
+
+	/**
+	 * Use 'requestAnimationFrame()' function for interval, instead of 'setInterval()'
+	 * Fixed the issue: Interval stops on second testimonial image
+	 */
+	function repeatOften() {
+		if (window.intervalCount >= 180) { // 60fps x 3 = 180 (3 seconds)
+			headerTicker();
+			// Reset interval counter
+			window.intervalCount = 0;
+		} else {
+			// Increment, till we get to 180 (3 seconds)
+			window.intervalCount++;
+		}
+
+		return window.intervalId = requestAnimationFrame(repeatOften);
+	}
+
+	window.intervalId = requestAnimationFrame(repeatOften);
+	// End slideshow menu header
+
+	$(".right_content_upload").mouseenter(function (e) {
+		$(".featured_transition_background").css("opacity",1);
+	});
+
+	$(".right_content_upload").mouseleave(function (e) {
+		$(".featured_transition_background").css("opacity",0);
+	});
+
+	// Adjust left alignment of active_download_featured_header
+	var dotsPxWidth = headers * 62;
+	var mgLeft = (900 - dotsPxWidth)/2;
+	$(".active_download_featured_header").css("margin-left", mgLeft);
+
+
+	$(".header_download_icon").click(function (e) {
+
+		var downloadElement = $(this).parent();
+		var activeDiv = $(".download_headers_content_image.active_t");
+		if (activeDiv.length > 0) {
+			// get parent
+			var fancyBox = activeDiv.parent();
+			var downloadHref = fancyBox.attr("href");
+
+			var psShortName = $("#breadcrum_photoset_name").text().trim();
+			psShortName = psShortName.replace(/ /g, "_");
+
+			var fileName = downloadHref.substr(downloadHref.lastIndexOf('_') + 1, downloadHref.length);
+
+			downloadElement.attr("href", downloadHref);
+			downloadElement.attr("download","TexturesCom_" + psShortName + "_" + fileName);
+		}
+	});
+
+	//Start fancybox
+
+	// header slide show
+	if ($(".download_headers_image").first().length > 0) {
+		$(".download_headers_image").first().addClass("active_t");
+		$(".download_headers_image").first().css("display", "block");
+		$(".download_headers_image").height($("#cover_headers").height());
+	}
+
+	// featured header slide show
+	if ($(".download_headers_content_image").first().length > 0) {
+		$(".download_headers_content_image").first().addClass("active_t");
+		$(".download_headers_content_image").first().css("display", "inline-block");
+	}
+
+	var psShortName = $("#breadcrum_photoset_name").text().trim();
+	psShortName = psShortName.replace(/ /g, "_");
+
+	$('[data-fancybox="gallery"]').fancybox({
+		buttons : [
+			"download",
+			"close"
+		],
+		loop : true,
+		beforeLoad: function () {
+			cancelAnimationFrame(window.intervalId);
+
+			var downloadLink = $('.fancybox-button--download')[0];
+			var downloadHref = downloadLink.getAttribute("href");
+			var fileName = downloadHref.substr(downloadHref.lastIndexOf('_') + 1, downloadHref.length);
+			downloadLink.setAttribute("download","TexturesCom_" + psShortName + "_" + fileName);
+
+			// Replace arrow right
+			// Original: "M22,12 L30,20 L22,28"
+			//$(".fancybox-button--arrow_right").html('<svg viewBox="0 0 40 40"><path d="M22,8 L30,20 L22,32"></path></svg>');
+			$(".fancybox-button--arrow_right").css("background", "none");
+			$(".fancybox-button--arrow_right").html('<div class="next_header_full"></div>');
+
+			// Replace arrow left
+			// Original: "M18,12 L10,20 L18,28"
+			//$(".fancybox-button--arrow_left").html('<svg viewBox="0 0 40 40"><path d="M18,8 L10,20 L18,32"></path></svg>');
+			$(".fancybox-button--arrow_left").css("background", "none");
+			$(".fancybox-button--arrow_left").html('<div class="prev_header_full"></div>');
+
+			// Download button
+			$(".fancybox-button--download").css("background", "none");
+			$(".fancybox-button--download").html('<div class="header_download_full_icon"></div>');
+
+			// Close icon
+			var anchorClose = "<a data-fancybox-close=\"\" class=\"fancybox-button fancybox-button--close\" title=\"Close\" style=\"background: rgba(0, 0, 0, 0) none repeat scroll 0% 0%;\">" +
+				"<div class=\"header_close_full_icon\"></div></a>";
+
+			$(".fancybox-button--close").replaceWith(anchorClose);
+		},
+		afterClose: function () {
+			window.intervalId = requestAnimationFrame(repeatOften);
+		}
+	});
+
+	//End fancybox
+
+});
+
+var headers = $('.dots').length;
+
+// Next/previous controls
+function plusSlides(n) {
+	// FWD
+	if (n > 0) {
+		if (window.tindex == headers - n) {
+			window.tindex = 0;
+			index = 0;
+		} else { // default as increasing
+			window.tindex = window.tindex + n;
+			index = window.tindex;
+		}
+	} else {
+		if(window.tindex == 0) { // PREV
+			window.tindex = headers +n;
+			index = window.tindex;
+		} else { // default as decreasing
+			window.tindex = window.tindex + n;
+			index = window.tindex;
+		}
+	}
+
+	// trigger a click event on the dot
+	$('.dots').eq(index).trigger('click');
+}
